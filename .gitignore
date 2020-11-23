@@ -1,6 +1,9 @@
 # Local .terraform directories
 **/.terraform/*
 
+# ssh
+tf-cloud-init*
+
 # .tfstate files
 *.tfstate
 *.tfstate.*

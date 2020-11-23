@@ -1,0 +1,31 @@
+#cloud-config
+# Add groups to the system
+# Adds the ubuntu group with members 'root' and 'sys'
+# and the empty group hashicorp.
+groups:
+  - ubuntu: [root,sys]
+  - hashicorp
+
+# Add users to the system. Users are added after groups are added.
+users:
+  - default
+  - name: terraform
+    gecos: terraform
+    shell: /bin/bash
+    primary_group: hashicorp
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin
+    ssh_import_id:
+    lock_passwd: false
+    ssh_authorized_keys:
+      - ssh-rsa 
+# Setsthe GOPATH & downloads the demo payload
+runcmd:
+  - sudo su terraform
+  - sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
+  - sudo apt-get update
+  - sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+  - sudo service docker start #CHANGE THIS TO UPON STARTUP
+  - sudo usermod -a -G docker ec2-user
