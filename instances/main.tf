@@ -6,25 +6,14 @@
 #     }
 #   }
 # }
+resource "aws_key_pair" "deployer" {
+  # source = "terraform-aws-modules/key-pair/aws"
+  key_name = "deployer-key"
+  public_key = var.ssh_key
+}
 
 provider "aws" {
   region  = var.region
-}
-
-data "aws_ami" "ubuntu" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["099720109477"] # Canonical
 }
 
 resource "aws_vpc" "vpc" {
@@ -93,15 +82,24 @@ resource "aws_security_group" "sg_22_80" {
 
 data "template_file" "user_data" {
   template = file("../scripts/install-docker.yaml")
+
+  vars = {
+    ecr_access_key        = var.ecr_access_key
+    ecr_secret_access_key = var.ecr_secret_access_key
+    region                = var.region
+    ecr_account_id        = var.ecr_account_id
+    ecr_image_name        = var.ecr_image_name
+  }
 }
 
 resource "aws_instance" "main" {
-  ami                         = data.aws_ami.ubuntu.id
+  ami                         = "ami-0f75ad20a270f216c" //Custom Amazon Linux 2 with Docker
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.subnet_public.id
   vpc_security_group_ids      = [aws_security_group.sg_22_80.id]
   associate_public_ip_address = true
   user_data                   = data.template_file.user_data.rendered
+  key_name                    = aws_key_pair.deployer.key_name
 }
 
 output "public_ip" {
