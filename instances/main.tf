@@ -6,6 +6,8 @@
 #     }
 #   }
 # }
+data "aws_availability_zones" "available" {}
+
 resource "aws_key_pair" "deployer" {
   # source = "terraform-aws-modules/key-pair/aws"
   key_name = "deployer-key"
@@ -17,7 +19,7 @@ provider "aws" {
 }
 
 resource "aws_vpc" "vpc" {
-  cidr_block           = "10.1.0.0/16"
+  cidr_block           = "10.0.0.0/24"
   enable_dns_support   = true
   enable_dns_hostnames = true
 }
@@ -28,10 +30,26 @@ resource "aws_internet_gateway" "igw" {
 
 resource "aws_subnet" "subnet_public" {
   vpc_id     = aws_vpc.vpc.id
-  cidr_block = "10.1.0.0/24"
+  cidr_block = "10.0.0.0/28"
+  availability_zone = data.aws_availability_zones.available.names[0]
+}
+
+resource "aws_subnet" "subnet_public-2" {
+  availability_zone = data.aws_availability_zones.available.names[1]
+  vpc_id     = aws_vpc.vpc.id
+  cidr_block = "10.0.0.16/28"
 }
 
 resource "aws_route_table" "rtb_public" {
+  vpc_id = aws_vpc.vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+}
+
+resource "aws_route_table" "rtb_public-2" {
   vpc_id = aws_vpc.vpc.id
 
   route {
@@ -45,29 +63,18 @@ resource "aws_route_table_association" "rta_subnet_public" {
   route_table_id = aws_route_table.rtb_public.id
 }
 
+resource "aws_route_table_association" "rta_subnet_public-2" {
+  subnet_id      = aws_subnet.subnet_public-2.id
+  route_table_id = aws_route_table.rtb_public-2.id
+}
+
 resource "aws_security_group" "sg_22_80" {
   name   = "sg_22"
   vpc_id = aws_vpc.vpc.id
 
-  # SSH access from the VPC
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   ingress {
     from_port   = 80
     to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -92,7 +99,7 @@ data "template_file" "user_data" {
   }
 }
 
-resource "aws_instance" "main" {
+resource "aws_instance" "first" {
   ami                         = "ami-0f75ad20a270f216c" //Custom Amazon Linux 2 with Docker
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.subnet_public.id
@@ -102,6 +109,12 @@ resource "aws_instance" "main" {
   key_name                    = aws_key_pair.deployer.key_name
 }
 
-output "public_ip" {
-  value = aws_instance.main.public_ip
+resource "aws_instance" "second" {
+  ami                         = "ami-0f75ad20a270f216c" //Custom Amazon Linux 2 with Docker
+  instance_type               = "t2.micro"
+  subnet_id                   = aws_subnet.subnet_public-2.id
+  vpc_security_group_ids      = [aws_security_group.sg_22_80.id]
+  associate_public_ip_address = true
+  user_data                   = data.template_file.user_data.rendered
+  key_name                    = aws_key_pair.deployer.key_name
 }
