@@ -1,10 +1,6 @@
 #cloud-config
-
 runcmd:
   - sudo service docker start
-  - export AWS_ACCESS_KEY_ID=${ecr_access_key}
-  - export AWS_SECRET_ACCESS_KEY=${ecr_secret_access_key}
-  - export AWS_DEFAULT_REGION=${region}
-  - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin ${ecr_account_id}.dkr.ecr.${region}.amazonaws.com
-  - docker pull ${ecr_account_id}.dkr.ecr.eu-west-2.amazonaws.com/${ecr_image_name}
-  - docker run -p 80:3000 ${ecr_account_id}.dkr.ecr.eu-west-2.amazonaws.com/${ecr_image_name}
+  - sudo systemctl enable docker
+  - docker run --restart=always -p 80:3000 ${ecr_account_id}.dkr.ecr.eu-west-2.amazonaws.com/${ecr_image_name}
+

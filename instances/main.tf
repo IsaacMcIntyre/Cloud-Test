@@ -73,6 +73,13 @@ resource "aws_security_group" "sg_22_80" {
   vpc_id = aws_vpc.vpc.id
 
   ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -91,16 +98,13 @@ data "template_file" "user_data" {
   template = file("../scripts/install-docker.yaml")
 
   vars = {
-    ecr_access_key        = var.ecr_access_key
-    ecr_secret_access_key = var.ecr_secret_access_key
-    region                = var.region
     ecr_account_id        = var.ecr_account_id
     ecr_image_name        = var.ecr_image_name
   }
 }
 
 resource "aws_instance" "first" {
-  ami                         = "ami-0f75ad20a270f216c" //Custom Amazon Linux 2 with Docker
+  ami                         = "ami-053b5dc3907b8bd31" //Custom Amazon Linux 2 with Docker
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.subnet_public.id
   vpc_security_group_ids      = [aws_security_group.sg_22_80.id]
@@ -110,7 +114,7 @@ resource "aws_instance" "first" {
 }
 
 resource "aws_instance" "second" {
-  ami                         = "ami-0f75ad20a270f216c" //Custom Amazon Linux 2 with Docker
+  ami                         = "ami-053b5dc3907b8bd31" //Custom Amazon Linux 2 with Docker
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.subnet_public-2.id
   vpc_security_group_ids      = [aws_security_group.sg_22_80.id]
