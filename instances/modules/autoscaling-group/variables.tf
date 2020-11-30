@@ -1,0 +1,15 @@
+variable "ssh-key" {}
+variable "ami" {}
+variable "instance-type" {}
+variable "user-data" {}
+variable "public-ip" {}
+variable "delete-on-termination" {}
+variable "sg-id" {}
+variable "max-size" {}
+variable "min-size" {}
+variable "hc-grace-period" {}
+variable "hc-check-type" {}
+variable "desired-capacity" {}
+variable "force-delete" {}
+variable "subnets" {}
+variable "tg-arn" {}
