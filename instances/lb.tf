@@ -19,17 +19,17 @@ resource "aws_security_group" "alb" {
   }
 }
 
-resource "aws_alb_target_group_attachment" "first" {
-  target_group_arn = aws_alb_target_group.group.arn
-  target_id        = aws_instance.first.id
-  port             = 80
-}
+# resource "aws_alb_target_group_attachment" "first" {
+#   target_group_arn = aws_alb_target_group.group.arn
+#   target_id        = aws_instance.first.id
+#   port             = 80
+# }
 
-resource "aws_alb_target_group_attachment" "second" {
-  target_group_arn = aws_alb_target_group.group.arn
-  target_id        = aws_instance.second.id
-  port             = 80
-}
+# resource "aws_alb_target_group_attachment" "second" {
+#   target_group_arn = aws_alb_target_group.group.arn
+#   target_id        = aws_instance.second.id
+#   port             = 80
+# }
 
 resource "aws_alb" "alb" {
   name            = "my-terraform-alb"
@@ -47,7 +47,7 @@ resource "aws_alb_target_group" "group" {
   }
 
   health_check {
-    path = "/health"
+    path = "/"
     port = 80
   }
 }

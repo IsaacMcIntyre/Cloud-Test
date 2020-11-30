@@ -102,23 +102,3 @@ data "template_file" "user_data" {
     ecr_image_name        = var.ecr_image_name
   }
 }
-
-resource "aws_instance" "first" {
-  ami                         = "ami-053b5dc3907b8bd31" //Custom Amazon Linux 2 with Docker
-  instance_type               = "t2.micro"
-  subnet_id                   = aws_subnet.subnet_public.id
-  vpc_security_group_ids      = [aws_security_group.sg_22_80.id]
-  associate_public_ip_address = true
-  user_data                   = data.template_file.user_data.rendered
-  key_name                    = aws_key_pair.deployer.key_name
-}
-
-resource "aws_instance" "second" {
-  ami                         = "ami-053b5dc3907b8bd31" //Custom Amazon Linux 2 with Docker
-  instance_type               = "t2.micro"
-  subnet_id                   = aws_subnet.subnet_public-2.id
-  vpc_security_group_ids      = [aws_security_group.sg_22_80.id]
-  associate_public_ip_address = true
-  user_data                   = data.template_file.user_data.rendered
-  key_name                    = aws_key_pair.deployer.key_name
-}
