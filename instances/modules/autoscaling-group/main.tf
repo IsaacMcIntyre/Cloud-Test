@@ -4,7 +4,7 @@ resource "aws_key_pair" "deployer" {
 }
 
 resource "aws_launch_template" "launch_template" {
-image_id                        = var.ami #"ami-053b5dc3907b8bd31"
+  image_id                      = var.ami #"ami-053b5dc3907b8bd31"
   instance_type                 = var.instance-type #"t2.micro"
   user_data                     = base64encode(var.user-data)#data.template_file.user_data.rendered)
   network_interfaces {
