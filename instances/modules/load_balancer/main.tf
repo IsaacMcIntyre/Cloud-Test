@@ -1,7 +1,9 @@
+# LOAD BALANCER
+
 resource "aws_security_group" "sg" {
   name        = "lb_security_group"
   description = "Load balancer security group"
-  vpc_id      = var.sg_vpc_id
+  vpc_id      = var.vpc_id
 
   ingress {
     from_port   = var.port
@@ -29,7 +31,7 @@ resource "aws_alb_target_group" "group" {
   name     = var.tg_name
   port     = var.port
   protocol = var.tg_protocol
-  vpc_id   = var.tg_vpc_id
+  vpc_id   = var.vpc_id
   stickiness {
     type = "lb_cookie"
   }

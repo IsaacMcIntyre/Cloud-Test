@@ -1,0 +1,5 @@
+#cloud-config
+runcmd:
+  - sudo service docker start
+  - sudo systemctl enable docker
+  - docker run --restart=always -p 80:3000 ${ecr_account_id}.dkr.ecr.eu-west-2.amazonaws.com/${ecr_image_name}

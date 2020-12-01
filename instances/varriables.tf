@@ -6,7 +6,11 @@ variable "ecr_account_id" {
   type = string
 }
 
-variable "ecr_image_name" {
+variable "ecr_fe_image_name" {
+  type = string
+}
+
+variable "ecr_be_image_name" {
   type = string
 }
 
