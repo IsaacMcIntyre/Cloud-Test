@@ -1,12 +1,12 @@
 resource "aws_security_group" "sg" {
   name        = "lb_security_group"
   description = "Load balancer security group"
-  vpc_id      = var.sg-vpc-id #aws_vpc.vpc.id
+  vpc_id      = var.sg_vpc_id
 
   ingress {
-    from_port   = var.port #80
-    to_port     = var.port #80
-    protocol    = var.sg-ingress-protocol #"tcp"
+    from_port   = var.port
+    to_port     = var.port
+    protocol    = var.sg_ingress_protocol
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -20,33 +20,33 @@ resource "aws_security_group" "sg" {
 }
 
 resource "aws_alb" "alb" {
-  name            = var.alb-name #"my-terraform-alb"
+  name            = var.alb_name 
   security_groups = [aws_security_group.sg.id]
-  subnets         = var.alb-subnet-ids #[aws_subnet.subnet_public.id, aws_subnet.subnet_public-2.id]
+  subnets         = var.alb_subnet_ids
 }
 
 resource "aws_alb_target_group" "group" {
-  name     = var.tg-name #"terraform-alb-target-group"
-  port     = var.port #80
-  protocol = var.tg-protocol #"HTTP"
-  vpc_id   = var.tg-vpc-id #aws_vpc.vpc.id
+  name     = var.tg_name
+  port     = var.port
+  protocol = var.tg_protocol
+  vpc_id   = var.tg_vpc_id
   stickiness {
     type = "lb_cookie"
   }
 
   health_check {
-    path = var.tg-hc-path #"/"
-    port = var.port #80
+    path = var.tg_hc_path
+    port = var.port
   }
 }
 
 resource "aws_alb_listener" "listener_http" {
   load_balancer_arn = aws_alb.alb.arn
-  port              = var.port #"80"
-  protocol          = var.l-protocol #"HTTP"
+  port              = var.port
+  protocol          = var.l_protocol
 
   default_action {
     target_group_arn = aws_alb_target_group.group.arn
-    type             = var.l-da-type #"forward"
+    type             = var.l_da_type
   }
 }

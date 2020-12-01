@@ -18,18 +18,18 @@ resource "aws_route_table" "rtb_public" {
   }
 }
 
-module "subnet-1" {
+module "subnet_1" {
   source = "../subnet"
-  vpc-id = aws_vpc.vpc.id
-  cidr-block = var.subnet_cidr_block[0] #"10.0.0.0/28"
-  availability-zone = var.availability_zone[0] #"eu-west-2a"
-  route-table-id = aws_route_table.rtb_public.id
+  vpc_id = aws_vpc.vpc.id
+  cidr_block = var.subnet_cidr_block[0]
+  availability_zone = var.availability_zone[0]
+  route_table_id = aws_route_table.rtb_public.id
 }
 
-module "subnet-2" {
+module "subnet_2" {
   source = "../subnet"
-  vpc-id = aws_vpc.vpc.id
-  cidr-block = var.subnet_cidr_block[1] #"10.0.0.16/28"
-  availability-zone = var.availability_zone[1]#"eu-west-2b"
-  route-table-id = aws_route_table.rtb_public.id
+  vpc_id = aws_vpc.vpc.id
+  cidr_block = var.subnet_cidr_block[1]
+  availability_zone = var.availability_zone[1]
+  route_table_id = aws_route_table.rtb_public.id
 }

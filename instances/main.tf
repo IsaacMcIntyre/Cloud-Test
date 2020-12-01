@@ -20,36 +20,36 @@ module "network" {
   availability_zone     = ["eu-west-2a", "eu-west-2b"]
 }
 
-module "load-balancer" {
-  source              = "./modules/load-balancer"
-  sg-vpc-id           = module.network.vpc-id
+module "load_balancer" {
+  source              = "./modules/load_balancer"
+  sg_vpc_id           = module.network.vpc_id
   port                = 80
-  sg-ingress-protocol = "tcp"
-  alb-name            = "my-alb"
-  alb-subnet-ids      = module.network.subnet-ids
-  tg-name             = "my-alb-target-group"
-  tg-protocol         = "HTTP"
-  tg-vpc-id           = module.network.vpc-id
-  tg-hc-path          = "/"
-  l-protocol          = "HTTP"
-  l-da-type           = "forward"
+  sg_ingress_protocol = "tcp"
+  alb_name            = "alb"
+  alb_subnet_ids      = module.network.subnet_ids
+  tg_name             = "target-group"
+  tg_protocol         = "HTTP"
+  tg_vpc_id           = module.network.vpc_id
+  tg_hc_path          = "/"
+  l_protocol          = "HTTP"
+  l_da_type           = "forward"
 }
 
-module "autoscaling-group" {
-  source                = "./modules/autoscaling-group"
-  ssh-key               = var.ssh_key
+module "autoscaling_group" {
+  source                = "./modules/autoscaling_group"
+  ssh_key               = var.ssh_key
   ami                   = "ami-053b5dc3907b8bd31"
-  instance-type         = "t2.micro"
-  user-data             = data.template_file.user_data.rendered
-  public-ip             = false
-  delete-on-termination = true
-  sg-id                 = [module.load-balancer.sg-id]
-  max-size              = 4
-  min-size              = 1
-  hc-grace-period       = 300
-  hc-check-type         = "ELB"
-  desired-capacity      = 2
-  force-delete          = true
-  subnets               = module.network.subnet-ids
-  tg-arn                = [module.load-balancer.alb-tg-arn]
+  instance_type         = "t2.micro"
+  user_data             = data.template_file.user_data.rendered
+  public_ip             = false
+  delete_on_termination = true
+  sg_id                 = [module.load_balancer.sg_id]
+  max_size              = 4
+  min_size              = 1
+  hc_grace_period       = 300
+  hc_check_type         = "ELB"
+  desired_capacity      = 2
+  force_delete          = true
+  subnets               = module.network.subnet_ids
+  tg_arn                = [module.load_balancer.alb_tg_arn]
 }

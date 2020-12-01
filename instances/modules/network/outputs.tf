@@ -1,7 +1,7 @@
-output "vpc-id" {
+output "vpc_id" {
   value = aws_vpc.vpc.id
 }
 
-output "subnet-ids" {
-  value = [module.subnet-1.subnet-id, module.subnet-2.subnet-id]
+output "subnet_ids" {
+  value = [module.subnet_1.subnet_id, module.subnet_2.subnet_id]
 }
