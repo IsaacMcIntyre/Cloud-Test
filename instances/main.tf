@@ -8,6 +8,10 @@ resource "aws_vpc" "vpc" {
   enable_dns_hostnames = true
 }
 
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.vpc.id
+}
+
 data "template_file" "fe_user_data" {
   template          = file("../scripts/run-front-end.yaml")
   vars = {
@@ -31,6 +35,7 @@ module "presentation" {
   availability_zone = ["eu-west-2a", "eu-west-2b"]
   ssh_key           = var.ssh_key
   user_data         = data.template_file.fe_user_data.rendered
+  gateway_id        = aws_internet_gateway.igw.id
 }
 
 module "application" {

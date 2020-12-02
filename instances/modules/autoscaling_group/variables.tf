@@ -1,15 +1,15 @@
-variable "ssh_key" {}
-variable "ami" {}
-variable "instance_type" {}
-variable "user_data" {}
-variable "public_ip" {}
-variable "delete_on_termination" {}
-variable "sg_id" {}
-variable "max_size" {}
-variable "min_size" {}
-variable "hc_grace_period" {}
-variable "hc_check_type" {}
-variable "desired_capacity" {}
-variable "force_delete" {}
-variable "subnets" {}
-variable "tg_arn" {}
+# variable "ssh_key" {}
+# variable "ami" {}
+# variable "instance_type" {}
+# variable "user_data" {}
+# variable "public_ip" {}
+# variable "delete_on_termination" {}
+# variable "sg_id" {}
+# variable "max_size" {}
+# variable "min_size" {}
+# variable "hc_grace_period" {}
+# variable "hc_check_type" {}
+# variable "desired_capacity" {}
+# variable "force_delete" {}
+# variable "subnets" {}
+# variable "tg_arn" {}
