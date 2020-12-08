@@ -26,31 +26,9 @@ module "subnet_2" {
   route_table_id = aws_route_table.rtb_public.id
 }
 
-# LB
-resource "aws_security_group" "sg" {
-  name        = "lb_security_group"
-  description = "Load balancer security group"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Allow all outbound traffic.
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
 resource "aws_alb" "alb" {
   name            = "alb" 
-  security_groups = [aws_security_group.sg.id]
+  security_groups = [var.security_group_id]
   subnets         = [module.subnet_1.subnet_id, module.subnet_2.subnet_id]
 }
 
@@ -81,21 +59,16 @@ resource "aws_alb_listener" "listener_http" {
 }
 
 # ASG
-resource "aws_key_pair" "deployer" {
-  key_name = "deployer_key"
-  public_key = var.ssh_key
-}
-
 resource "aws_launch_template" "launch_template" {
   image_id                      = "ami-053b5dc3907b8bd31"
   instance_type                 = "t2.micro"
   user_data                     = base64encode(var.user_data)
   network_interfaces {
-    associate_public_ip_address = false
+    associate_public_ip_address = true
     delete_on_termination       = true
-    security_groups             = [aws_security_group.sg.id]
+    security_groups             = [var.security_group_id]
   }
-  key_name                      = aws_key_pair.deployer.key_name
+  key_name                      = var.key_name
 }
 
 resource "aws_autoscaling_group" "autoscaling_group" {
